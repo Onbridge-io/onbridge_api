@@ -10,6 +10,7 @@ do
 done
 
 python3 createsuperuser.py
+python3 init_status_model.py
 python3 manage.py collectstatic --noinput
 
 echo "=Starting runserver="

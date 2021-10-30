@@ -1,6 +1,11 @@
 from django.db import models
 
 
+class Status(models.Model):
+    chain_id = models.PositiveIntegerField(unique=True)
+    indexed_block = models.PositiveBigIntegerField()
+
+
 class Token(models.Model):
     token_id = models.PositiveIntegerField(unique=True)
     owner = models.CharField(max_length=255, verbose_name='Owners')
