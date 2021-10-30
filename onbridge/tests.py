@@ -12,7 +12,7 @@ class TokenTests(APITestCase):
     owner = 'Ox01'
     chain_id = 1
     tx = '0x01'
-    block = 1
+    block_number = 1
 
     def setUp(self):
         token = models.Token(
@@ -21,7 +21,7 @@ class TokenTests(APITestCase):
             owner=self.owner,
             chain_id=self.chain_id,
             tx=self.tx,
-            block=self.block
+            block_number=self.block_number
         )
         token.save()
 
@@ -31,7 +31,7 @@ class TokenTests(APITestCase):
         self.assertEqual(token.owner, self.owner)
         self.assertEqual(token.chain_id, self.chain_id)
         self.assertEqual(token.tx, self.tx)
-        self.assertEqual(token.block, self.block)
+        self.assertEqual(token.block_number, self.block_number)
         self.assertEqual(models.Token.objects.count(), 1)
 
     def test_view(self):
