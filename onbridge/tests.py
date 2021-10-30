@@ -16,6 +16,7 @@ class TokenTests(APITestCase):
 
     def setUp(self):
         token = models.Token(
+            id=1,
             token_id=self.token_id,
             owner=self.owner,
             chain_id=self.chain_id,
@@ -41,7 +42,7 @@ class TokenTests(APITestCase):
 
     def test_view_get_item(self):
         response = self.client.get('/api/tokens/1/')
-        token = models.Token.objects.get(pk=1)
+        token = models.Token.objects.get(id=1)
         serializer = serializers.TokenSerializer(token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
