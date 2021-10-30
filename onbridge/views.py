@@ -1,5 +1,13 @@
-from django.http import HttpResponse
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+from . import models
+from . import serializers
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+class TokenView(viewsets.ModelViewSet):
+    lookup_field = 'token_id'
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = serializers.TokenSerializer
+    queryset = models.Token.objects.all()
+    http_method_names = ['get', 'options', 'head']
