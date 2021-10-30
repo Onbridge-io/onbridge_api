@@ -1,0 +1,38 @@
+name: CI Onbridge API
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - '*'
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    services:
+      api_db:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: djagraph
+          POSTGRES_PASSWORD: djagraph
+          POSTGRES_DB: djagraph
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create env
+        run: python3 -m venv env
+      - name: Activate env 
+        run: source env/bin/activate
+      - name: Install Python requirements
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python3 manage.py test
+        env:
+          DB_NAME: djagraph
+          DB_USER: djagraph
+          DB_PASSWORD: djagraph
+          DB_HOST: localhost
+          DEBUG: False
+          DJANGO_LOG_LEVE: ERROR
