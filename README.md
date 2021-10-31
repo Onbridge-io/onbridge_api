@@ -8,6 +8,19 @@ To make user experience smoother we offload heavy background tasks to backend th
 
 This service is designed to be built and run using docker compose. See the root repository for details.
 
+To run in separately:
+
+```sh
+export ADMIN_USER=admin
+export ADMIN_PASSWORD=<very secure admin password>
+export DB_HOST=localhost
+export DB_NAME=api
+export DB_USER=api
+export DB_PASSWORD=<very secure db password>
+docker build -t api
+docker run -it -e ADMIN_USER -e ADMIN_PASSWORD -e DB_HOST -e DB_NAME -e DB_USER -e DB_PASSWORD --network=host api
+```
+
 ## LICENSE
 
 ```
