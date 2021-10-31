@@ -1,0 +1,11 @@
+{
+    "name": "Neon Bear",
+    "description": "Bear that shines",
+    "image": "https://api.hack.onbridge.io/media/token_meta/19.jpg",
+    "attributes": [
+      {
+        "trait_type": "name",
+        "value": "just noname bear"
+      }
+    ]
+  }
