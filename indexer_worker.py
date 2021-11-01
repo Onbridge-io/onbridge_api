@@ -67,7 +67,7 @@ if __name__ == '__main__':
             events = event_transfer.get_all_entries()
 
             for event in events:
-                if event.args.to == bridge_address:
+                if event.args.to == bridge_address or event.args.to == '0x0000000000000000000000000000000000000000':
                     log.info('token id {} on bridge: {}'.format(event.args.tokenId, bridge_address))
                     continue
                 try:
@@ -81,7 +81,8 @@ if __name__ == '__main__':
                 token.block_number = event.blockNumber
                 token.save()
                 log.info('token id {} save to db'.format(token.token_id))
-            status.indexed_block = last_block if block_number + STEP > last_block else block_number + STEP
+            status.indexed_block = last_block+1 if block_number + STEP > last_block else block_number + STEP+1
             status.save()
-            log.info('next events.')
+            log.info('next block number: {}'.format(status.indexed_block))
+
         log.info('done.')
