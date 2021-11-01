@@ -64,6 +64,7 @@ class StatusTests(APITestCase):
             id=1,
             chain_id=self.chain_id,
             indexed_block=self.indexed_block,
+            oracle_block=self.indexed_block
         )
         status.save()
 
@@ -71,4 +72,5 @@ class StatusTests(APITestCase):
         status = models.Status.objects.get(id=1)
         self.assertEqual(status.chain_id, self.chain_id)
         self.assertEqual(status.indexed_block, self.indexed_block)
+        self.assertEqual(status.oracle_block, self.indexed_block)
         self.assertEqual(models.Status.objects.count(), 1)
