@@ -36,3 +36,4 @@ jobs:
           DB_HOST: localhost
           DEBUG: False
           DJANGO_LOG_LEVE: ERROR
+          SECRET_KEY: djagraph
