@@ -13,6 +13,7 @@ class TokenTests(APITestCase):
     chain_id = 1
     tx = '0x01'
     block_number = 1
+    skill = 0
 
     def setUp(self):
         token = models.Token(
@@ -32,6 +33,7 @@ class TokenTests(APITestCase):
         self.assertEqual(token.chain_id, self.chain_id)
         self.assertEqual(token.tx, self.tx)
         self.assertEqual(token.block_number, self.block_number)
+        self.assertEqual(token.skill, self.skill)
         self.assertEqual(models.Token.objects.count(), 1)
 
     def test_view(self):

@@ -13,4 +13,5 @@ class Token(models.Model):
     chain_id = models.PositiveIntegerField()
     tx = models.CharField(max_length=255, verbose_name='Tx hashes')
     block_number = models.PositiveBigIntegerField()
+    skill = models.IntegerField(default=0)
     date_updated = models.DateTimeField(auto_now=True)
