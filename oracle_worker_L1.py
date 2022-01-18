@@ -41,7 +41,7 @@ if __name__ == '__main__':
     w3_l1.middleware_onion.inject(geth_poa_middleware, layer=0)
     bridge_address_l1 = w3_l1.toChecksumAddress(L1_BRIDGE_ADDRESS)
     chain_id_l1 = w3_l1.eth.chain_id
-    bridge_contract_l1 = init_bridge(w3_l1, L1_BRIDGE_ADDRESS, L1_BRIDGE_ABI_FILENAME)
+    bridge_contract_l1 = init_bridge(w3_l1, bridge_address_l1, L1_BRIDGE_ABI_FILENAME)
 
     account = w3_l1.eth.account.privateKeyToAccount(PRIVATE_KEY)
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     w3_l2.middleware_onion.inject(geth_poa_middleware, layer=0)
     bridge_address_l2 = w3_l2.toChecksumAddress(L2_BRIDGE_ADDRESS)
     chain_id_l2 = w3_l2.eth.chain_id
-    bridge_contract_l2 = init_bridge(w3_l2, L2_BRIDGE_ADDRESS, L2_BRIDGE_ABI_FILENAME)
+    bridge_contract_l2 = init_bridge(w3_l2, bridge_address_l2, L2_BRIDGE_ABI_FILENAME)
 
     while True:
         log.info('pause...')
