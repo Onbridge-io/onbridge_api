@@ -17,7 +17,6 @@ def main():
     except ObjectDoesNotExist:
         chain_id_1 = models.Status(chain_id=os.environ['L1_CHAIN_ID'])
     chain_id_1.indexed_block = os.environ['L1_START_BLOCK']
-    chain_id_1.oracle_block = os.environ['L1_START_BLOCK']
     chain_id_1.save()
 
     try:
@@ -25,7 +24,6 @@ def main():
     except ObjectDoesNotExist:
         chain_id_2 = models.Status(chain_id=os.environ['L2_CHAIN_ID'])
     chain_id_2.indexed_block = os.environ['L2_START_BLOCK']
-    chain_id_2.oracle_block = os.environ['L2_START_BLOCK']
     chain_id_2.save()
 
     log.info('successfully created')

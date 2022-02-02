@@ -4,7 +4,6 @@ from django.db import models
 class Status(models.Model):
     chain_id = models.PositiveIntegerField(unique=True)
     indexed_block = models.PositiveBigIntegerField()
-    oracle_block = models.PositiveBigIntegerField()
 
 
 class Token(models.Model):
