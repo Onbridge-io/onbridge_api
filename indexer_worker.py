@@ -7,6 +7,7 @@ import time
 import django
 import requests
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.images import ImageFile
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -29,23 +30,26 @@ def init_token(w3, address, abi_file_name):
     return w3.eth.contract(abi=data['abi'], address=address)
 
 
-def indexing_new_token(token_contract, token_id, chain_id, event):
-    token_uri = token_contract.functions.tokenURI(token_id).call()
-    token_metadata = requests.get(token_uri, timeout=120).json()
-    token_image_url = token_metadata['image']
-    image_bytes = requests.get(token_image_url, timeout=120).content
-    token_image = ImageFile(io.BytesIO(image_bytes), name=f'{token_id}.png')
+def indexing_new_token(token_contract, chain_id, event):
+    token_id = event.args.tokenId
+    try:
+        token = Token.objects.get(token_id=token_id)
+    except ObjectDoesNotExist:
+        token = Token(token_id=token_id)
 
-    Token.objects.get_or_create(
-        token_id=token_id,
-        defaults={
-            'owner': event.args.to,
-            'chain_id': chain_id,
-            'tx': event.transactionHash.hex(),
-            'block_number': event.blockNumber,
-            'image': token_image
-        })
+        token_uri = token_contract.functions.tokenURI(token_id).call()
+        token_metadata = requests.get(token_uri, timeout=120).json()
+        token_image_url = token_metadata['image']
+        image_bytes = requests.get(token_image_url, timeout=120).content
+        token_image = ImageFile(io.BytesIO(image_bytes), name=f'{token_id}.png')
+        token.image = token_image
 
+    token.owner = event.args.to
+    token.chain_id = chain_id
+    token.tx = event.transactionHash.hex()
+    token.block_number = event.blockNumber
+
+    token.save()
     log.info(f'token id {token_id} save to db')
 
 
@@ -84,7 +88,7 @@ if __name__ == '__main__':
                     log.info(f'token id {event.args.tokenId} on bridge: {bridge_address}')
                     continue
 
-                indexing_new_token(token_contract, event.args.tokenId, chain_id, event)
+                indexing_new_token(token_contract, chain_id, event)
 
             status.indexed_block = last_block + 1 if block_number + STEP > last_block else block_number + STEP + 1
             status.save()
