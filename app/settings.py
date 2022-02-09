@@ -169,7 +169,7 @@ LOGGING = {
     },
 }
 
-MEDIA_URL = 'token_metadata/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
