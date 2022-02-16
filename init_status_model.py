@@ -1,9 +1,7 @@
-import os
 import logging
+import os
 
 import django
-from django.core.exceptions import ObjectDoesNotExist
-
 
 log = logging.getLogger(__name__)
 
@@ -11,25 +9,32 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
 
 def main():
+    # bsc config
+    Status.objects.get_or_create(
+        chain_id=os.environ['BSC_CHAIN_ID'],
+        defaults={
+            'indexed_block': os.environ['BSC_START_BLOCK']
+        })
 
-    try:
-        chain_id_1 = models.Status.objects.get(chain_id=os.environ['L1_CHAIN_ID'])
-    except ObjectDoesNotExist:
-        chain_id_1 = models.Status(chain_id=os.environ['L1_CHAIN_ID'])
-    chain_id_1.indexed_block = os.environ['L1_START_BLOCK']
-    chain_id_1.save()
 
-    try:
-        chain_id_2 = models.Status.objects.get(chain_id=os.environ['L2_CHAIN_ID'])
-    except ObjectDoesNotExist:
-        chain_id_2 = models.Status(chain_id=os.environ['L2_CHAIN_ID'])
-    chain_id_2.indexed_block = os.environ['L2_START_BLOCK']
-    chain_id_2.save()
+    # eth config
+    Status.objects.get_or_create(
+        chain_id=os.environ['ETH_CHAIN_ID'],
+        defaults={
+            'indexed_block': os.environ['ETH_START_BLOCK']
+        })
+
+    # polygon config
+    Status.objects.get_or_create(
+        chain_id=os.environ['POLYGON_CHAIN_ID'],
+        defaults={
+            'indexed_block': os.environ['POLYGON_START_BLOCK']
+        })
 
     log.info('successfully created')
 
 
 if __name__ == '__main__':
     django.setup()
-    from onbridge import models
+    from onbridge.models import Status
     main()
