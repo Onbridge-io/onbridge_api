@@ -5,6 +5,9 @@ class Status(models.Model):
     chain_id = models.PositiveIntegerField(unique=True)
     indexed_block = models.PositiveBigIntegerField()
 
+    class Meta:
+        verbose_name_plural = "statuses"
+
 
 class Token(models.Model):
     token_id = models.PositiveIntegerField(unique=True)
