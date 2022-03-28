@@ -1,13 +1,10 @@
-from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
-
-from . import models
-from . import serializers
+from onbridge import models, serializers
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from django.urls import reverse
 
 
 class TokenTests(APITestCase):
-
     token_id = 1
     owner = 'Ox01'
     chain_id = 1
@@ -39,36 +36,16 @@ class TokenTests(APITestCase):
     def test_view(self):
         url = reverse('token-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_view_get_item(self):
         response = self.client.get('/api/tokens/1/')
         token = models.Token.objects.get(id=1)
         serializer = serializers.TokenSerializer(token)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
     def test_view_get_does_not_exist_item(self):
         response = self.client.get('/api/tokens/123/')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-class StatusTests(APITestCase):
-
-    chain_id = 1
-    indexed_block = 123
-
-    def setUp(self):
-        status = models.Status(
-            id=1,
-            chain_id=self.chain_id,
-            indexed_block=self.indexed_block
-        )
-        status.save()
-
-    def test_model(self):
-        status = models.Status.objects.get(id=1)
-        self.assertEqual(status.chain_id, self.chain_id)
-        self.assertEqual(status.indexed_block, self.indexed_block)
-        self.assertEqual(models.Status.objects.count(), 1)
+        self.assertEqual(response.status_code, HTTP_404_NOT_FOUND)
