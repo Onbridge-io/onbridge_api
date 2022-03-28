@@ -20,6 +20,7 @@ UPSTREAM = os.environ['UPSTREAM']
 TOKEN_ADDRESS = os.environ['TOKEN_ADDRESS']
 TOKEN_ABI_FILENAME = os.environ['TOKEN_ABI_FILENAME']
 BRIDGE_ADDRESS = os.environ['BRIDGE_ADDRESS']
+INDEXER_INTERVAL = int(os.environ['INDEXER_INTERVAL'])
 
 STEP = 1000
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
 
         for block_number in range(first_block, last_block, STEP):
             log.info('sleep...')
-            time.sleep(1)
+            time.sleep(INDEXER_INTERVAL)
             log.info(f'current indexing block: {block_number}')
 
             event_transfer = token_contract.events.Transfer.createFilter(
@@ -95,4 +96,4 @@ if __name__ == '__main__':
             log.info(f'next block number: {status.indexed_block}')
 
         log.info('done, pause...')
-        time.sleep(1)
+        time.sleep(INDEXER_INTERVAL)
