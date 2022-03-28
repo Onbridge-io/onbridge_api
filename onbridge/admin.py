@@ -12,6 +12,8 @@ class StatusAdmin(admin.ModelAdmin):
 
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('token_id', 'owner', 'chain_id', 'block_number', 'skill')
+    search_fields = ('owner', )
+    list_filter = ('chain_id', )
 
     class Meta:
         model = models.Token
