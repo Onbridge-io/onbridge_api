@@ -18,10 +18,10 @@ class Token(models.Model):
     block_number = models.PositiveBigIntegerField()
     skill = models.IntegerField(default=0)
     date_updated = models.DateTimeField(auto_now=True)
+    ipfs_uri_image = models.CharField(max_length=100, verbose_name='ifps uri image')
 
 
 class Action(models.Model):
-
     class Direction(models.IntegerChoices):
         DEPOSIT = 1
         WITHDRAW = 2

@@ -8,7 +8,6 @@ import django
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.images import ImageFile
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
@@ -21,6 +20,7 @@ TOKEN_ADDRESS = os.environ['TOKEN_ADDRESS']
 TOKEN_ABI_FILENAME = os.environ['TOKEN_ABI_FILENAME']
 BRIDGE_ADDRESS = os.environ['BRIDGE_ADDRESS']
 INDEXER_INTERVAL = int(os.environ['INDEXER_INTERVAL'])
+IPFS_HOST = os.environ["IPFS_HOST"]
 
 STEP = 1000
 
@@ -32,6 +32,7 @@ def init_token(w3, address, abi_file_name):
 
 
 def indexing_new_token(token_contract, chain_id, event):
+    empty_string = ''
     token_id = event.args.tokenId
     try:
         token = Token.objects.get(token_id=token_id)
@@ -40,10 +41,11 @@ def indexing_new_token(token_contract, chain_id, event):
 
         token_uri = token_contract.functions.tokenURI(token_id).call()
         token_metadata = requests.get(token_uri, timeout=120).json()
-        token_image_url = token_metadata['image']
-        image_bytes = requests.get(token_image_url, timeout=120).content
-        token_image = ImageFile(io.BytesIO(image_bytes), name=f'{token_id}.png')
-        token.image = token_image
+        token.ipfs_uri_image = token_metadata['image'].replace("https://ipfs.io/ipfs/", "") \
+            if token_metadata.get('image') else empty_string
+
+        if token.ipfs_uri_image:
+            token.image = token.ipfs_uri_image
 
     token.owner = event.args.to
     token.chain_id = chain_id
@@ -52,6 +54,33 @@ def indexing_new_token(token_contract, chain_id, event):
 
     token.save()
     log.info(f'token id {token_id} save to db')
+    if not os.path.isfile(token.image.url[1:]):
+        fetch_image(token, storage_media)
+    else:
+        log.info("the picture for token_id {} has already been downloaded".format(token.token_id))
+
+def fetch_image(token, storage_media):
+    ipfs_host = IPFS_HOST + '{}'
+    log.info("download image for token_id {}".format(token.token_id))
+
+    uri = ipfs_host.format("".join(["/ipfs/", token.ipfs_uri_image]))
+    log.info("requests: GET {}".format(uri))
+    response = requests.get(uri, timeout=120)
+
+    if response.status_code == 200:
+        log.info("{} {}".format(response.status_code, response.reason))
+        data = response.content
+        _, __, subdir_name, file_name = token.image.url.split("/")
+        subdir = os.path.join(storage_media, subdir_name)
+        if not os.path.exists(subdir) and not os.path.isdir(subdir):
+            os.mkdir(os.path.join(subdir))
+        file = os.path.join(subdir, file_name)
+        with open(file, "wb") as f:
+            f.write(data)
+        log.info("image downloaded. path: {}.".format(file))
+    else:
+        log.error("image NOT loaded.")
+        raise Exception("{} {}".format(response.status_code, response.reason))
 
 
 if __name__ == '__main__':
