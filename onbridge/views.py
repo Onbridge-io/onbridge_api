@@ -40,3 +40,10 @@ class TokenView(viewsets.ModelViewSet):
     queryset = models.Token.objects.all().order_by('token_id')
     http_method_names = ['get', 'options', 'head']
     filterset_class = TokenFilterSet
+
+
+class ActionView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = serializers.ActionSerializer
+    queryset = models.Action.objects.all()
+    http_method_names = ['get', 'options', 'head']
