@@ -10,6 +10,7 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from web3.types import Address, ChecksumAddress
 from app import settings
+from datetime import datetime
 import logging
 
 log = logging.getLogger(__name__)
@@ -96,7 +97,6 @@ class Indexer:
                 token.ipfs_uri_image = empty_string
 
         self.update_token_data(event, token)
-        log.info(f"  Index new token: save to database {token} ")
 
         if not os.path.isfile(token.image.url[1:]):
             log.info(f"  Index new token: no picture is provided, expected file: {token.image.url[1:]}. Fetching")
@@ -108,11 +108,27 @@ class Indexer:
         """
         Write data to token from event and save
         """
-        token.owner = event.args.to
-        token.chain_id = self.chain_id
-        token.tx = event.transactionHash.hex()
-        token.block_number = event.blockNumber
-        token.save()
+        timestamp_from_block = self.w3.eth.get_block(event.blockNumber)['timestamp']
+        timestamp_from_database = token.blockchain_timestamp
+        if timestamp_from_database is None:
+            log.info(f"    Update token: It is the very first time when token "
+                     f"with token id = {token.token_id} is being written")
+            timestamp_from_database = 0
+        if timestamp_from_database < timestamp_from_block:
+            log.info(f"    Update token: Database contained old data for token: {token}. ")
+            log.info(f"    Update token: Last update time stored in db is: "
+                     f"{datetime.fromtimestamp(timestamp_from_database)}")
+            log.info(f"    Update token: Current block time is {datetime.fromtimestamp(timestamp_from_block)}")
+            if self.chain_id != token.chain_id and token.chain_id is not None:
+                log.info(
+                    f"    Update token: token has been relocated from chain {token.chain_id} to {self.chain_id}")
+            token.owner = event.args.to
+            token.chain_id = self.chain_id
+            token.tx = event.transactionHash.hex()
+            token.block_number = event.blockNumber
+            token.blockchain_timestamp = timestamp_from_block
+            token.save()
+            log.info(f"    Update token: Now database contains new data for token: {token}")
 
     def fetch_image(self, token):
         """
