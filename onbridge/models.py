@@ -20,6 +20,9 @@ class Token(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     ipfs_uri_image = models.CharField(max_length=100, verbose_name='ifps uri image')
 
+    def __str__(self):
+        return f"<Token Object>: Owner {self.owner} has token with id={self.token_id} on chain with id={self.chain_id}."
+
 
 class Action(models.Model):
     class Direction(models.IntegerChoices):
