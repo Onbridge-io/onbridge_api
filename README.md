@@ -54,9 +54,9 @@ docker build -t api
 docker run -it -e ADMIN_USER -e ADMIN_PASSWORD -e DB_HOST -e DB_NAME -e DB_USER -e DB_PASSWORD --network=host api
 ```
 
-## Step 3. Indexers
+## Step 3. Token indexers
 
-Before starting indexers one should initialize indexer's state: current block, chain id, etc.  
+Before starting indexers one should initialize token indexer's state: current block, chain id, etc.  
 For this one should run `init_status_model.py` with following envs:
 
 ```dotenv
@@ -80,7 +80,7 @@ One indexer checks only one chain
 Contents of such chain env file:
 ```dotenv
 UPSTREAM=<rpc provider url>
-TOKEN_ABI_FILENAME=erc721-abi.json
+TOKEN_ABI_FILENAME=token_indexer/erc721-abi.json
 TOKEN_ADDRESS=<address of token on this chain>
 BRIDGE_ADDRESS=<address of bridge contract on this chain>
 INDEXER_INTERVAL=<interval of indexer in seconds>
@@ -99,7 +99,7 @@ Run this code with activated venv
 set -a;
 source <file with envs for specific chain>;
 set +a;
-python3 indexer_worker.py
+python3 token_indexer/start.py
 ```
 
 ### Note: it is recommended to run L1 indexer firstly
@@ -112,7 +112,7 @@ Others are describes bellow:
 ### BSC
 ```dotenv
 UPSTREAM=https://data-seed-prebsc-1-s1.binance.org:8545/
-TOKEN_ABI_FILENAME=erc721-abi.json
+TOKEN_ABI_FILENAME=token_indexer/erc721-abi.json
 TOKEN_ADDRESS=0xe6847645B1832B2923e5938ec482f2b0EfA6DE4c
 BRIDGE_ADDRESS=0x099e3307be3b694e8C7dBc54E2ecB8897806BD2A
 INDEXER_INTERVAL=3
@@ -122,7 +122,7 @@ IPFS_HOST='https://ipfs.io'
 ### Kovan
 ```dotenv
 UPSTREAM=https://kovan.infura.io/v3/<your infura key>
-TOKEN_ABI_FILENAME=erc721-abi.json
+TOKEN_ABI_FILENAME=token_indexer/erc721-abi.json
 TOKEN_ADDRESS=0x45c037263752F1d1F8cA94fAff339A0178C06EEb
 BRIDGE_ADDRESS=0xBa32a080612eA433FD64F4C5c99c73666149e997
 INDEXER_INTERVAL=3
@@ -132,7 +132,7 @@ IPFS_HOST='https://ipfs.io'
 ### Polygon
 ```dotenv
 UPSTREAM=https://matic-mumbai.chainstacklabs.com/
-TOKEN_ABI_FILENAME=erc721-abi.json
+TOKEN_ABI_FILENAME=token_indexer/erc721-abi.json
 TOKEN_ADDRESS=0xc303c254529542bfCbCCE275Bb8c819fD8fFdb03
 BRIDGE_ADDRESS=0xF6C9DaF74f99388c2C666b0468a9f1D1601c0013
 INDEXER_INTERVAL=3
