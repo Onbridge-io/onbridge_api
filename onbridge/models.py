@@ -1,12 +1,9 @@
 from django.db import models
 
 
-class Status(models.Model):
+class Indexer(models.Model):
     chain_id = models.PositiveIntegerField(unique=True)
     indexed_block = models.PositiveBigIntegerField()
-
-    class Meta:
-        verbose_name_plural = "statuses"
 
 
 class Token(models.Model):
