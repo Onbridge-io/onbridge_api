@@ -57,7 +57,7 @@ docker run -it -e ADMIN_USER -e ADMIN_PASSWORD -e DB_HOST -e DB_NAME -e DB_USER 
 ## Step 3. Token indexers
 
 Before starting indexers one should initialize token indexer's state: current block, chain id, etc.  
-For this one should run `init_status_model.py` with following envs:
+For this one should run `init_indexer_model.py` with following envs:
 
 ```dotenv
 
@@ -72,7 +72,7 @@ POLYGON_START_BLOCK=24965926
 Run this code with activated venv
 ```shell
 python3 manage.py migrate
-python3 init_status_model.py
+python3 init_indexer_model.py
 ```
 
 It is recommended to have a proper .env-file for each indexer.  

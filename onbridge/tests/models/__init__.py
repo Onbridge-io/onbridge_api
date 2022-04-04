@@ -1,2 +1,2 @@
-from .StatusTests import *
+from .IndexerTests import *
 from .ActionTests import *

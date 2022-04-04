@@ -171,8 +171,8 @@ class Indexer:
         django.setup()
         self.storage_media = settings.MEDIA_ROOT
         log.info(f"Init stage: storage media path is {self.storage_media}")
-        from onbridge.models import Status, Token
-        self.status_model = Status
+        from onbridge.models import Indexer, Token
+        self.indexer_model = Indexer
         self.token_model = Token
 
         self.indexer_interval = indexer_interval
@@ -214,8 +214,8 @@ class Indexer:
         """
         Main cycle body where events are filtered by block
         """
-        status = self.status_model.objects.get(chain_id=self.chain_id)
-        first_block = status.indexed_block
+        indexer = self.indexer_model.objects.get(chain_id=self.chain_id)
+        first_block = indexer.indexed_block
         log.info(f"Cycle body: obtained first block from database: {first_block}")
         last_block = self.w3.eth.get_block('latest')['number']
         log.info(f"Cycle body: obtained last block from blockchain: {last_block}")
@@ -245,6 +245,6 @@ class Indexer:
 
                     self.index_new_token(event)
 
-            status.indexed_block = last_block + 1 if block_number + STEP > last_block else block_number + STEP + 1
-            status.save()
-            log.info(f"Cycle body: next block number: {status.indexed_block}")
+            indexer.indexed_block = last_block + 1 if block_number + STEP > last_block else block_number + STEP + 1
+            indexer.save()
+            log.info(f"Cycle body: next block number: {indexer.indexed_block}")
