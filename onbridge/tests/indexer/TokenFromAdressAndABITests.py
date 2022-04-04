@@ -14,11 +14,12 @@ class TokenFromAddressAndABITests(TestCase):
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,
             indexer_interval=INDEXER_INTERVAL,
-            ipfs_host=IPFS_HOST
+            ipfs_host=IPFS_HOST,
+            bridge_abi_filename=BRIDGE_ABI_FILENAME
         )
 
     def test_contract_taken_successfully(self):
-        token = self.indexer.get_token_by_address_and_abi(
+        token = self.indexer.get_contract_by_address_and_abi(
             self.indexer.token_address,
             TOKEN_ABI_FILENAME)
         self.assertEqual(token.address, TOKEN_ADDRESS)
@@ -26,7 +27,7 @@ class TokenFromAddressAndABITests(TestCase):
     def test_contract_fails_with_wrong_address(self):
         self.assertRaises(web3.exceptions.InvalidAddress,
                           lambda:
-                          self.indexer.get_token_by_address_and_abi(
+                          self.indexer.get_contract_by_address_and_abi(
                               '0xdeadbeef',
                               TOKEN_ABI_FILENAME),
                           )
@@ -35,7 +36,7 @@ class TokenFromAddressAndABITests(TestCase):
         self.assertRaises(
             FileNotFoundError,
             lambda:
-            self.indexer.get_token_by_address_and_abi(
+            self.indexer.get_contract_by_address_and_abi(
                 TOKEN_ADDRESS,
                 'dummy.json'),
         )

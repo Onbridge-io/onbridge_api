@@ -36,18 +36,15 @@ class Action(models.Model):
     status = models.IntegerField(choices=Status.choices, default=Status.NEW)
     bridge_sender = models.CharField(max_length=255)
     bridge_receiver = models.CharField(max_length=255)
-    l1_tx = models.CharField(max_length=255)
-    l2_tx = models.CharField(max_length=255)
-    l2_chain_id = models.PositiveIntegerField()
+    l1_tx = models.CharField(max_length=255, null=True)
+    l2_tx = models.CharField(max_length=255, null=True)
+    l2_chain_id = models.PositiveIntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
             models.CheckConstraint(check=~models.Q(bridge_sender=""), name="non_empty_bridge_sender"),
-            models.CheckConstraint(check=~models.Q(bridge_receiver=""), name="non_empty_bridge_receiver"),
-            models.CheckConstraint(check=~models.Q(l1_tx=""), name="non_empty_l1_tx"),
-            models.CheckConstraint(check=~models.Q(l2_tx=""), name="non_empty_l2_tx"),
             models.CheckConstraint(check=models.Q(direction__in=[1, 2]), name="Direction_choices"),
             models.CheckConstraint(check=models.Q(status__in=[1, 2]), name="Status_choices")
         ]

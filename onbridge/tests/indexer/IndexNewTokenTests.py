@@ -46,7 +46,8 @@ class IndexNewTokenTests(TestCase):
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,
             indexer_interval=INDEXER_INTERVAL,
-            ipfs_host=IPFS_HOST
+            ipfs_host=IPFS_HOST,
+            bridge_abi_filename=BRIDGE_ABI_FILENAME
         )
         self.token_id = 0
         # mocking media storage to prevent test data corrupting main media volume

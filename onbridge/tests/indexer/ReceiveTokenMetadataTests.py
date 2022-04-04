@@ -13,7 +13,8 @@ class ReceiveTokenMetadataTests(TestCase):
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,
             indexer_interval=INDEXER_INTERVAL,
-            ipfs_host=IPFS_HOST
+            ipfs_host=IPFS_HOST,
+            bridge_abi_filename=BRIDGE_ABI_FILENAME
         )
 
     def test_successfully_received_metadata(self):
@@ -47,7 +48,8 @@ class ReceiveTokenMetadataTests(TestCase):
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,
             indexer_interval=INDEXER_INTERVAL,
-            ipfs_host=IPFS_HOST
+            ipfs_host=IPFS_HOST,
+            bridge_abi_filename=BRIDGE_ABI_FILENAME
         )
         # Now contract will tell us wrong tokenURI
         mocked_indexer.token_contract.functions.tokenURI = lambda token_id: f"google.com/{token_id}"
