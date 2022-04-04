@@ -69,16 +69,16 @@ class ActionTests(TestCase):
 
     def test_model_data_types_bridge_receiver(self):
 
-        with self.assertRaises(django.db.utils.IntegrityError):
-            models.Action.objects.create(
-                bridge_sender=self.bridge_sender,
-                direction=models.Action.Direction.DEPOSIT,
-                token=self.token,
-                l1_tx=self.l1_tx,
-                l2_tx=self.l2_tx,
-                l2_chain_id=self.l2_chain_id,
-                status=models.Action.Status.NEW
-            )
+        action = models.Action.objects.create(
+            bridge_sender=self.bridge_sender,
+            direction=models.Action.Direction.DEPOSIT,
+            token=self.token,
+            l1_tx=self.l1_tx,
+            l2_tx=self.l2_tx,
+            l2_chain_id=self.l2_chain_id,
+            status=models.Action.Status.NEW
+        )
+        self.assertEqual(action.bridge_receiver, '')
 
     def test_model_data_types_direction(self):
         with self.assertRaises(django.db.utils.IntegrityError):
@@ -105,29 +105,29 @@ class ActionTests(TestCase):
                 status=models.Action.Status.NEW
             )
 
-    def test_model_data_types_tx_1(self):
-        with self.assertRaises(django.db.utils.IntegrityError):
-            models.Action.objects.create(
-                bridge_sender=self.bridge_sender,
-                bridge_receiver=self.bridge_receiver,
-                direction=models.Action.Direction.DEPOSIT,
-                token=self.token,
-                l2_tx=self.l2_tx,
-                l2_chain_id=self.l2_chain_id,
-                status=models.Action.Status.NEW
-            )
+    def test_model_data_types_l1_tx(self):
+        action = models.Action.objects.create(
+            bridge_sender=self.bridge_sender,
+            bridge_receiver=self.bridge_receiver,
+            direction=models.Action.Direction.DEPOSIT,
+            token=self.token,
+            l2_tx=self.l2_tx,
+            l2_chain_id=self.l2_chain_id,
+            status=models.Action.Status.NEW
+        )
+        self.assertEqual(action.l1_tx, None)
 
-    def test_model_data_types_tx_2(self):
-        with self.assertRaises(django.db.utils.IntegrityError):
-            models.Action.objects.create(
-                bridge_sender=self.bridge_sender,
-                bridge_receiver=self.bridge_receiver,
-                direction=models.Action.Direction.DEPOSIT,
-                token=self.token,
-                l2_tx=self.l2_tx,
-                l2_chain_id=self.l2_chain_id,
-                status=models.Action.Status.NEW
-            )
+    def test_model_data_types_l2_tx(self):
+        action = models.Action.objects.create(
+            bridge_sender=self.bridge_sender,
+            bridge_receiver=self.bridge_receiver,
+            direction=models.Action.Direction.DEPOSIT,
+            token=self.token,
+            l2_tx=self.l2_tx,
+            l2_chain_id=self.l2_chain_id,
+            status=models.Action.Status.NEW
+        )
+        self.assertEqual(action.l1_tx, None)
 
     def test_model_data_types_l2_chain_id(self):
         with self.assertRaises(django.db.utils.IntegrityError):

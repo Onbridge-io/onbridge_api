@@ -36,7 +36,7 @@ class Indexer:
     All other methods are executed inside cycle body.
     """
 
-    def get_token_by_address_and_abi(self, address: Union[Address, ChecksumAddress],
+    def get_contract_by_address_and_abi(self, address: Union[Address, ChecksumAddress],
                                      abi_file_name: str) -> web3.contract.Contract:
         """
         Methods obtains a Contract object from address and ABI filename
@@ -104,6 +104,24 @@ class Indexer:
         else:
             log.info(f"  Index new token: the picture for token_id {token.token_id} has already been downloaded")
 
+    def handle_bridge_events(self, direction, event_name, _from_block, _to_block):
+        events = getattr(
+                self.bridge_contract.events, event_name
+            ).createFilter(fromBlock=_from_block, toBlock=_to_block).get_all_entries()
+
+        log.info(f"  Found {len(events)} events {event_name}")
+
+        for event in events:
+            token = self.token_model.objects.get(token_id=event.args._amount)
+            self.action_model.objects.create(
+                token=token,
+                direction=direction,
+                status=self.action_model.Status.NEW,
+                bridge_sender=event.address,
+                l1_tx=event.transactionHash.hex()
+            )
+            log.info(f"    Event {event_name} with transaction {event.transactionHash.hex()} processed")
+
     def update_token_data(self, event, token):
         """
         Write data to token from event and save
@@ -162,6 +180,7 @@ class Indexer:
             token_address: str,
             bridge_address: str,
             token_abi_filename: str,
+            bridge_abi_filename: str,
             indexer_interval: int,
             ipfs_host: str
     ):
@@ -171,9 +190,10 @@ class Indexer:
         django.setup()
         self.storage_media = settings.MEDIA_ROOT
         log.info(f"Init stage: storage media path is {self.storage_media}")
-        from onbridge.models import Indexer, Token
+        from onbridge.models import Indexer, Token, Action
         self.indexer_model = Indexer
         self.token_model = Token
+        self.action_model = Action
 
         self.indexer_interval = indexer_interval
         log.info(f"Init stage: indexer interval is {self.indexer_interval} s")
@@ -193,8 +213,11 @@ class Indexer:
         self.token_address = self.w3.toChecksumAddress(token_address)
         log.info(f"Init stage: token contract address is {self.token_address}")
 
-        self.token_contract = self.get_token_by_address_and_abi(self.token_address, token_abi_filename)
+        self.token_contract = self.get_contract_by_address_and_abi(self.token_address, token_abi_filename)
         log.info(f"Init stage: successfully created token contract. Ready to start")
+
+        self.bridge_contract = self.get_contract_by_address_and_abi(self.bridge_address, bridge_abi_filename)
+        log.info(f"Init stage: successfully created bridge contract. Ready to start")
 
     def main_cycle(self):
         """
@@ -221,14 +244,16 @@ class Indexer:
         log.info(f"Cycle body: obtained last block from blockchain: {last_block}")
         log.info(f"Cycle body: start index process from {first_block} block to {last_block}...")
 
-        for block_number in range(first_block, last_block, STEP):
+        for from_block in range(first_block, last_block, STEP):
             log.info("Cycle body: sleep...")
             time.sleep(self.indexer_interval)
-            log.info(f"Cycle body: current index block: {block_number}")
+            log.info(f"Cycle body: current index block: {from_block}")
 
+            log.info("Event Transfer Handling")
+            to_block = from_block + STEP
             event_transfer = self.token_contract.events.Transfer.createFilter(
-                fromBlock=block_number,
-                toBlock=block_number + STEP
+                fromBlock=from_block,
+                toBlock=to_block
             )
             events = event_transfer.get_all_entries()
             log.info(f"Cycle body: obtained {len(events)} events")
@@ -245,6 +270,24 @@ class Indexer:
 
                     self.index_new_token(event)
 
-            indexer.indexed_block = last_block + 1 if block_number + STEP > last_block else block_number + STEP + 1
+            log.info("Event Bridge Handling")
+            if self.chain_id == 97:
+                log.info('The current network is type L1')
+                self.handle_bridge_events(
+                    self.action_model.Direction.DEPOSIT,
+                    'DepositInitiated',
+                    from_block,
+                    to_block
+                )
+            else:
+                log.info('The current network is type L2')
+                self.handle_bridge_events(
+                    self.action_model.Direction.WITHDRAW,
+                    'WithdrawalInitiated',
+                    from_block,
+                    to_block
+                )
+
+            indexer.indexed_block = last_block + 1 if to_block > last_block else to_block + 1
             indexer.save()
             log.info(f"Cycle body: next block number: {indexer.indexed_block}")
