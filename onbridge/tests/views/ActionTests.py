@@ -7,21 +7,39 @@ from onbridge import models, serializers
 
 class ActionTestsView(APITestCase):
 
-    sender = '0x001'
-    receiver = '0x002'
-    token_id = 0
+    token_id = 1
+    owner = 'Ox01'
+    chain_id = 1
+    tx = '0x01'
+    block_number = 1
+    skill = 0
+
+    bridge_sender = '0x001'
+    bridge_receiver = '0x002'
     l1_tx = '0x123'
     l2_tx = '1x123'
+    l2_chain_id = 1
 
     def setUp(self):
+
+        self.token = models.Token.objects.create(
+            id=1,
+            token_id=self.token_id,
+            owner=self.owner,
+            chain_id=self.chain_id,
+            tx=self.tx,
+            block_number=self.block_number
+        )
+
         self.action = models.Action.objects.create(
             pk=1,
-            sender=self.sender,
-            receiver=self.receiver,
+            bridge_sender=self.bridge_sender,
+            bridge_receiver=self.bridge_receiver,
             direction=models.Action.Direction.DEPOSIT,
-            token_id=self.token_id,
+            token=self.token,
             l1_tx=self.l1_tx,
             l2_tx=self.l2_tx,
+            l2_chain_id=self.l2_chain_id,
             status=models.Action.Status.NEW
         )
 

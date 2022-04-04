@@ -34,19 +34,21 @@ class Action(models.Model):
         NEW = 1
         DONE = 2
 
-    sender = models.CharField(max_length=255, verbose_name='Senders')
-    receiver = models.CharField(max_length=255, verbose_name='Receivers')
+    token = models.ForeignKey(Token, on_delete=models.CASCADE)
     direction = models.IntegerField(choices=Direction.choices)
-    token_id = models.PositiveIntegerField()
+    status = models.IntegerField(choices=Status.choices, default=Status.NEW)
+    bridge_sender = models.CharField(max_length=255)
+    bridge_receiver = models.CharField(max_length=255)
     l1_tx = models.CharField(max_length=255)
     l2_tx = models.CharField(max_length=255)
-    status = models.IntegerField(choices=Status.choices, default=Status.NEW)
+    l2_chain_id = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
-            models.CheckConstraint(check=~models.Q(sender=""), name="non_empty_sender"),
-            models.CheckConstraint(check=~models.Q(receiver=""), name="non_empty_receiver"),
+            models.CheckConstraint(check=~models.Q(bridge_sender=""), name="non_empty_bridge_sender"),
+            models.CheckConstraint(check=~models.Q(bridge_receiver=""), name="non_empty_bridge_receiver"),
             models.CheckConstraint(check=~models.Q(l1_tx=""), name="non_empty_l1_tx"),
             models.CheckConstraint(check=~models.Q(l2_tx=""), name="non_empty_l2_tx"),
             models.CheckConstraint(check=models.Q(direction__in=[1, 2]), name="Direction_choices"),

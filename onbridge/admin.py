@@ -20,7 +20,7 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'receiver', 'direction', 'token_id', 'status')
+    list_display = ('bridge_sender', 'bridge_receiver', 'direction', 'token', 'status')
 
     class Meta:
         model = models.Action
