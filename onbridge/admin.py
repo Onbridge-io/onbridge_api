@@ -19,13 +19,13 @@ class TokenAdmin(admin.ModelAdmin):
         model = models.Token
 
 
-class ActionAdmin(admin.ModelAdmin):
+class ActionBridgeAdmin(admin.ModelAdmin):
     list_display = ('bridge_sender', 'bridge_receiver', 'direction', 'token', 'status')
 
     class Meta:
-        model = models.Action
+        model = models.ActionBridge
 
 
 admin.site.register(models.Indexer, IndexerAdmin)
 admin.site.register(models.Token, TokenAdmin)
-admin.site.register(models.Action, ActionAdmin)
+admin.site.register(models.ActionBridge, ActionBridgeAdmin)

@@ -5,7 +5,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register('tokens', views.TokenView)
-router.register('actions', views.ActionView)
+router.register('actions', views.ActionBridgeView)
 
 
 urlpatterns = [

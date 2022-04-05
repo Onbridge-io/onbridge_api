@@ -9,7 +9,7 @@ class TokenSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ActionSerializer(serializers.ModelSerializer):
+class ActionBridgeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Action
+        model = models.ActionBridge
         fields = '__all__'
