@@ -190,10 +190,10 @@ class Indexer:
         django.setup()
         self.storage_media = settings.MEDIA_ROOT
         log.info(f"Init stage: storage media path is {self.storage_media}")
-        from onbridge.models import Indexer, Token, Action
+        from onbridge.models import Indexer, Token, ActionBridge
         self.indexer_model = Indexer
         self.token_model = Token
-        self.action_model = Action
+        self.action_model = ActionBridge
 
         self.indexer_interval = indexer_interval
         log.info(f"Init stage: indexer interval is {self.indexer_interval} s")

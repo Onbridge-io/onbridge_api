@@ -22,7 +22,7 @@ class Token(models.Model):
         return f"<Token Object>: Owner {self.owner} has token with id={self.token_id} on chain with id={self.chain_id}."
 
 
-class Action(models.Model):
+class ActionBridge(models.Model):
     class Direction(models.IntegerChoices):
         DEPOSIT = 1
         WITHDRAW = 2
@@ -35,7 +35,7 @@ class Action(models.Model):
     direction = models.IntegerField(choices=Direction.choices)
     status = models.IntegerField(choices=Status.choices, default=Status.NEW)
     bridge_sender = models.CharField(max_length=255)
-    bridge_receiver = models.CharField(max_length=255)
+    bridge_receiver = models.CharField(max_length=255, null=True)
     l1_tx = models.CharField(max_length=255, null=True)
     l2_tx = models.CharField(max_length=255, null=True)
     l2_chain_id = models.PositiveIntegerField(null=True)

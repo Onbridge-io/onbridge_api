@@ -5,7 +5,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_403_FORB
 from onbridge import models, serializers
 
 
-class ActionTestsView(APITestCase):
+class ActionBridgeTestsView(APITestCase):
 
     token_id = 1
     owner = 'Ox01'
@@ -31,16 +31,16 @@ class ActionTestsView(APITestCase):
             block_number=self.block_number
         )
 
-        self.action = models.Action.objects.create(
+        self.action = models.ActionBridge.objects.create(
             pk=1,
             bridge_sender=self.bridge_sender,
             bridge_receiver=self.bridge_receiver,
-            direction=models.Action.Direction.DEPOSIT,
+            direction=models.ActionBridge.Direction.DEPOSIT,
             token=self.token,
             l1_tx=self.l1_tx,
             l2_tx=self.l2_tx,
             l2_chain_id=self.l2_chain_id,
-            status=models.Action.Status.NEW
+            status=models.ActionBridge.Status.NEW
         )
 
     def test_view(self):
@@ -50,7 +50,7 @@ class ActionTestsView(APITestCase):
 
     def test_view_get_item(self):
         response = self.client.get('/api/actions/1/')
-        serializer = serializers.ActionSerializer(self.action)
+        serializer = serializers.ActionBridgeSerializer(self.action)
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 

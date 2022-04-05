@@ -42,8 +42,8 @@ class TokenView(viewsets.ModelViewSet):
     filterset_class = TokenFilterSet
 
 
-class ActionView(viewsets.ModelViewSet):
+class ActionBridgeView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = serializers.ActionSerializer
-    queryset = models.Action.objects.all()
+    serializer_class = serializers.ActionBridgeSerializer
+    queryset = models.ActionBridge.objects.all()
     http_method_names = ['get', 'options', 'head']
