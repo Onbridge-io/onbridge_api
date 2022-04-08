@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
 STEP = 1000
+L1 = 97
 
 
 class IndexerException(Exception):
@@ -112,14 +113,18 @@ class Indexer:
         log.info(f"  Found {len(events)} events {event_name}")
 
         for event in events:
-            token = self.token_model.objects.get(token_id=event.args._amount)
-            self.action_model.objects.create(
+            token = self.token_model.objects.get(token_id=event.args._id)
+            action = self.action_model.objects.create(
                 token=token,
                 direction=direction,
                 status=self.action_model.Status.NEW,
                 bridge_sender=event.address,
-                l1_tx=event.transactionHash.hex()
             )
+            if direction == self.action_model.Direction.DEPOSIT:
+                action.l1_tx = event.transactionHash.hex()
+            else:
+                action.l2_tx = event.transactionHash.hex()
+            action.save()
             log.info(f"    Event {event_name} with transaction {event.transactionHash.hex()} processed")
 
     def update_token_data(self, event, token):
@@ -249,7 +254,7 @@ class Indexer:
             time.sleep(self.indexer_interval)
             log.info(f"Cycle body: current index block: {from_block}")
 
-            log.info("Event Transfer Handling")
+            log.info("Handling Event Transfer ")
             to_block = from_block + STEP
             event_transfer = self.token_contract.events.Transfer.createFilter(
                 fromBlock=from_block,
@@ -270,8 +275,8 @@ class Indexer:
 
                     self.index_new_token(event)
 
-            log.info("Event Bridge Handling")
-            if self.chain_id == 97:
+            log.info("Handling Event Bridge ")
+            if self.chain_id == L1:
                 log.info('The current network is type L1')
                 self.handle_bridge_events(
                     self.action_model.Direction.DEPOSIT,
