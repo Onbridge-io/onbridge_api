@@ -1,3 +1,3 @@
-from .TokenFromAdressAndABITests import *
+from .ContactFactoryTests import *
 from .ReceiveTokenMetadataTests import *
 from .IndexNewTokenTests import *

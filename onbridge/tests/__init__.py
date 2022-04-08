@@ -1,3 +1,3 @@
 from .models import *
 from .views import *
-from .indexer import *
+from .token_indexer import *

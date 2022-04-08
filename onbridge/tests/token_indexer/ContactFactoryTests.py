@@ -5,7 +5,7 @@ from token_indexer.Indexer import Indexer
 from .mock_envs import *
 
 
-class TokenFromAddressAndABITests(TestCase):
+class ContactFactoryTests(TestCase):
 
     def setUp(self) -> None:
         self.indexer = Indexer(
@@ -19,10 +19,15 @@ class TokenFromAddressAndABITests(TestCase):
         )
 
     def test_contract_taken_successfully(self):
-        token = self.indexer.get_contract_by_address_and_abi(
+        contact_token = self.indexer.get_contract_by_address_and_abi(
             self.indexer.token_address,
             TOKEN_ABI_FILENAME)
-        self.assertEqual(token.address, TOKEN_ADDRESS)
+        self.assertEqual(contact_token.address, TOKEN_ADDRESS)
+
+        contact_bridge = self.indexer.get_contract_by_address_and_abi(
+            self.indexer.bridge_address,
+            BRIDGE_ABI_FILENAME)
+        self.assertEqual(contact_bridge.address, BRIDGE_ADDRESS)
 
     def test_contract_fails_with_wrong_address(self):
         self.assertRaises(web3.exceptions.InvalidAddress,

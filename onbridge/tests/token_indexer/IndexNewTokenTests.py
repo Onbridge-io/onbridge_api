@@ -3,7 +3,7 @@ import os
 from django.test import TestCase
 
 from onbridge.models import Token
-from token_indexer.Indexer import Indexer, IndexerException
+from token_indexer.Indexer import Indexer
 from .mock_envs import *
 from pathlib import Path
 
@@ -75,13 +75,15 @@ class IndexNewTokenTests(TestCase):
 
     def test_successfully_move_token_between_chains(self):
         block_number_before_move = 16780309
-        mock_event_before_move = MockEvent(self.token_id, '0xdeadbeef', block_number_before_move,
-                                           MockTransactionHash('0xdummyhash_old'))
+        mock_event_before_move = MockEvent(
+            self.token_id, '0xdeadbeef', block_number_before_move, MockTransactionHash('0xdummyhash_old')
+        )
 
         # mock IPFS fetching image function. Now it just creates empty PNG file
         # with token_id as filename
-        self.indexer.fetch_image = lambda token: Path(self.media_path_with_ipfs, f"{token.token_id}.png").open(
-            "w").close()
+        self.indexer.fetch_image = lambda token: Path(
+            self.media_path_with_ipfs, f"{token.token_id}.png"
+        ).open("w").close()
         self.indexer.index_new_token(mock_event_before_move)
         token_before_move: Token = Token.objects.first()
         self.assertEqual(97, token_before_move.chain_id)
@@ -94,8 +96,9 @@ class IndexNewTokenTests(TestCase):
         block_number_after_move = block_number_before_move + 100
 
         # to mock that new event (after move) is later than the previous one
-        mock_event_after_move = MockEvent(self.token_id, '0xdeadbeef', block_number_after_move,
-                                          MockTransactionHash('0xdummyhash_new'))
+        mock_event_after_move = MockEvent(
+            self.token_id, '0xdeadbeef', block_number_after_move, MockTransactionHash('0xdummyhash_new')
+        )
 
         self.indexer.index_new_token(mock_event_after_move)
 
