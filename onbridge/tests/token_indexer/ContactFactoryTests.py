@@ -1,4 +1,5 @@
 import web3.exceptions
+from web3 import Web3
 from django.test import TestCase
 
 from token_indexer.Indexer import Indexer
@@ -9,7 +10,7 @@ class ContactFactoryTests(TestCase):
 
     def setUp(self) -> None:
         self.indexer = Indexer(
-            upstream=UPSTREAM,
+            w3=Web3(Web3.HTTPProvider(UPSTREAM, request_kwargs={'timeout': 120})),
             token_abi_filename=TOKEN_ABI_FILENAME,
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,

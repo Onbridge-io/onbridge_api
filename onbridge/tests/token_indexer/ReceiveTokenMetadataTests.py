@@ -1,4 +1,5 @@
 from django.test import TestCase
+from web3 import Web3
 
 from .mock_envs import *
 from token_indexer.Indexer import Indexer, IndexerException
@@ -8,7 +9,7 @@ class ReceiveTokenMetadataTests(TestCase):
 
     def setUp(self) -> None:
         self.indexer = Indexer(
-            upstream=UPSTREAM,
+            w3=Web3(Web3.HTTPProvider(UPSTREAM, request_kwargs={'timeout': 120})),
             token_abi_filename=TOKEN_ABI_FILENAME,
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,
@@ -43,7 +44,7 @@ class ReceiveTokenMetadataTests(TestCase):
         Mocking indexer's contract. We replace function tokenURI to see behaviour of IPFS provider
         """
         mocked_indexer = Indexer(
-            upstream=UPSTREAM,
+            w3=Web3(Web3.HTTPProvider(UPSTREAM, request_kwargs={'timeout': 120})),
             token_abi_filename=TOKEN_ABI_FILENAME,
             token_address=TOKEN_ADDRESS,
             bridge_address=BRIDGE_ADDRESS,

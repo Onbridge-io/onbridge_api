@@ -1,6 +1,8 @@
 import os
 import sys
 
+from web3 import Web3
+
 UPSTREAM = os.environ['UPSTREAM']
 TOKEN_ADDRESS = os.environ['TOKEN_ADDRESS']
 TOKEN_ABI_FILENAME = os.environ['TOKEN_ABI_FILENAME']
@@ -23,7 +25,7 @@ def main():
     sys.path.append(django_dir)
     from Indexer import Indexer
     Indexer(
-        upstream=UPSTREAM,
+        w3=Web3(Web3.HTTPProvider(UPSTREAM, request_kwargs={'timeout': 120})),
         ipfs_host=IPFS_HOST,
         bridge_address=BRIDGE_ADDRESS,
         indexer_interval=INDEXER_INTERVAL,

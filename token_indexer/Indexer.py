@@ -6,7 +6,6 @@ from typing import Union
 import django
 import requests
 import web3.contract
-from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from web3.types import Address, ChecksumAddress
 from app import settings
@@ -181,7 +180,7 @@ class Indexer:
 
     def __init__(
             self,
-            upstream: str,
+            w3: web3.Web3,
             token_address: str,
             bridge_address: str,
             token_abi_filename: str,
@@ -206,7 +205,7 @@ class Indexer:
         self.ipfs_host = ipfs_host
         log.info(f"Init stage: ipfs host is {self.ipfs_host}")
 
-        self.w3 = Web3(Web3.HTTPProvider(upstream, request_kwargs={'timeout': 120}))
+        self.w3 = w3
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         self.chain_id = self.w3.eth.chain_id
