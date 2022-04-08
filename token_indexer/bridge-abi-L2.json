@@ -1,21 +1,105 @@
 {
-
   "abi": [
     {
       "inputs": [
         {
-          "internalType": "contract IERC721",
-          "name": "_l1Token",
+          "internalType": "contract IERC721Bridged",
+          "name": "_l2Token",
           "type": "address"
         },
         {
-          "internalType": "contract IERC721Bridged",
-          "name": "_l2Token",
+          "internalType": "contract IDeBridgeGate",
+          "name": "_deBridgeGate",
           "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AddressAlreadyAdded",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AdminBadRole",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CallProxyBadRole",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ChainToIsNotSupported",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "nativeSender",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "chainIdFrom",
+          "type": "uint256"
+        }
+      ],
+      "name": "NativeSenderBadRole",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RemovingMissingAddress",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "chainIdTo",
+          "type": "uint256"
+        }
+      ],
+      "name": "ContractAddressOnChainIdUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "nativeSender",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "chainIdFrom",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "ControllingAddressUpdated",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -46,6 +130,19 @@
         }
       ],
       "name": "DepositFinalized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
       "type": "event"
     },
     {
@@ -129,7 +226,20 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "l1Token",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "l2Token",
           "type": "address"
         },
         {
@@ -168,13 +278,50 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "ORACLE_ROLE",
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "_nativeSender",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainIdFrom",
+          "type": "uint256"
+        }
+      ],
+      "name": "addControllingAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "chainIdToContractAddress",
       "outputs": [
         {
-          "internalType": "bytes32",
+          "internalType": "address",
           "name": "",
-          "type": "bytes32"
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "deBridgeGate",
+      "outputs": [
+        {
+          "internalType": "contract IDeBridgeGate",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -201,6 +348,43 @@
       "name": "finalizeInboundTransfer",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getChainId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "cid",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_chainId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getDebridgeId",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -265,13 +449,48 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "l1Token",
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "isAddressFromChainIdControlling",
       "outputs": [
         {
-          "internalType": "contract IERC721",
+          "internalType": "bool",
           "name": "",
-          "type": "address"
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "_nativeSender",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainIdFrom",
+          "type": "uint256"
+        }
+      ],
+      "name": "isControllingAddress",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -301,9 +520,62 @@
           "internalType": "uint256",
           "name": "_id",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainIdTo",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_fallback",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_executionFee",
+          "type": "uint256"
         }
       ],
       "name": "outboundTransfer",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "_nativeSender",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainIdFrom",
+          "type": "uint256"
+        }
+      ],
+      "name": "removeControllingAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -347,6 +619,24 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainIdTo",
+          "type": "uint256"
+        }
+      ],
+      "name": "setContractAddressOnChainId",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes4",
           "name": "interfaceId",
           "type": "bytes4"
@@ -361,6 +651,26 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     }
   ]
