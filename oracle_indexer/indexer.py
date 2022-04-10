@@ -8,8 +8,6 @@ import requests
 log = logging.getLogger(__name__)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
-ORACLE_API = os.environ['ORACLE_API']
-URI_TX = os.environ['URI_TX']
 L1 = 97
 TIME_SLEEP = 15
 
@@ -38,11 +36,9 @@ class Indexer:
                 log.info(f'    Oracle did not process bridging. skip')
                 continue
             if L1 == send_data['eventOriginChainId']:
-                action.direction = self.action_bridge_model.Direction.DEPOSIT
                 action.l2_tx = claim_data['transactionHash']
                 action.l2_chain_id = claim_data['eventOriginChainId']
             else:
-                action.direction = self.action_bridge_model.Direction.WITHDRAW
                 action.l1_tx = claim_data['transactionHash']
                 action.l2_chain_id = send_data['eventOriginChainId']
 
@@ -76,6 +72,9 @@ class Indexer:
 
 
 if __name__ == '__main__':
+    ORACLE_API = os.environ['ORACLE_API']
+    URI_TX = os.environ['URI_TX']
+
     django.setup()
     from onbridge.models import ActionBridge
 
